@@ -21,9 +21,9 @@ uint8_t pinB = 0xFF;
 int8_t invert_encoder = 1;
 const int encoder_invert_address = 16;
 
-void Encoder::init(){
-	pinMode(ENC_A_PIN, INPUT_PULLUP); //encoder A
-	pinMode(ENC_B_PIN, INPUT_PULLUP); //encoder B
+void Encoder::init(){  // n.b. inverted encoder in the dumbest way possible.
+	pinMode(ENC_B_PIN, INPUT_PULLUP); //encoder A
+	pinMode(ENC_A_PIN, INPUT_PULLUP); //encoder B
 	invert_encoder = EEPROM.read(encoder_invert_address);
 }
 

@@ -3,11 +3,12 @@
 #include "Calibrate.h"
 #include "Display.h"
 #include <EEPROM.h>
+#include <stdint.h>
 
 namespace supersixteen{
 
-const int calibrationEEPROMAddress = 0;
-const int displayModeEEPROMAddress = 20; //set whether to display numbers or note names C0, B1
+const char calibrationEEPROMAddress = 0;
+const char displayModeEEPROMAddress = 20; //set whether to display numbers or note names C0, B1
 
 unsigned int octave_values[9] = { 0,   500,  1000, 1500, 2000, 2500, 3000, 3500, 4000 };
 //int calibration_values[9]   = { 0,   0,    0,    0,    0,    0,    0,    0,    0    };
@@ -38,11 +39,11 @@ int Calibration::getCalibratedOutput(double pitch) {
 	return calibratedPitch;
 }
 
-int Calibration::getCalibrationValue(int step){
+int Calibration::getCalibrationValue(uint8_t step){
 	return calibration_values[step];
 }
 
-int Calibration::incrementCalibration(int amt, int step) {
+int Calibration::incrementCalibration(int amt, uint8_t step) {
 	if (abs(calibration_values[step] + amt) < 100) { //calibration values stored as 0.0 - 2.0 but displayed as -99 to +99
 		calibration_values[step] += amt;
 	} 
@@ -50,7 +51,7 @@ int Calibration::incrementCalibration(int amt, int step) {
 }
 
 void Calibration::readCalibrationValues() {
-	for (int i = 0; i < 9; i++) {
+	for (uint8_t i = 0; i < 9; i++) {
 		calibration_values[i] = EEPROM.read(i) - 100; //convert 0-255 to +/-99
 		if (abs(calibration_values[i]) > 99) { //discard garbage
 			calibration_values[i] = 0;
@@ -59,7 +60,7 @@ void Calibration::readCalibrationValues() {
 }
 
 void Calibration::writeCalibrationValues() {
-	for (int i = 0; i < 9; i++) {
+	for (uint8_t i = 0; i < 9; i++) {
 		EEPROM.update(i, calibration_values[i] + 100); //convert +/-99 to 0-255
 	}
 }

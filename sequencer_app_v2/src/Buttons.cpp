@@ -9,7 +9,7 @@
 
 namespace supersixteen{	
 	
-const int function_buttons[7] = { SHIFT_PIN, PLAY_PIN, LOAD_PIN, SAVE_PIN, RECORD_PIN, REPEAT_PIN, GLIDE_PIN };
+const uint8_t function_buttons[7] = { SHIFT_PIN, LOAD_PIN, SAVE_PIN, PLAY_PIN, RECORD_PIN, REPEAT_PIN, GLIDE_PIN }; // updated order
 
 MCP23S17 ButtonDriver(&SPI, CS0_PIN, 0);
 
@@ -30,7 +30,7 @@ void Buttons::init() {
 	
 	SPI.setBitOrder(MSBFIRST);
 	ButtonDriver.begin();
-	for (int i = 0; i < 4; i++){
+	for (uint8_t i = 0; i < 4; i++){
 		ButtonDriver.pinMode(i+4, OUTPUT);
 		ButtonDriver.digitalWrite(i+4, HIGH);
 		ButtonDriver.pinMode(i, INPUT_PULLUP);
@@ -54,7 +54,7 @@ void Buttons::poll() {
 	if (row > 3) row = 0;
 	ButtonDriver.digitalWrite(row+4, LOW);
 	buttons_state = ButtonDriver.readPort(); //read all pins at once to reduce spi overhead (prevents display flicker)
-	for (int ii = 0; ii < 4; ii++) {
+	for (uint8_t ii = 0; ii < 4; ii++) {
 		int stepnum = button_map[row * 4 + ii];
 		//bool value = ButtonDriver.digitalRead(button_map[stepnum]); //read one pin at a time
 		buttons_mask = buttons_state & 0x000F; //mask off only bits 1-4, the button matrix columns
@@ -69,7 +69,7 @@ void Buttons::poll() {
 	ButtonDriver.digitalWrite(row+4, HIGH);
 	
 	buttons_mask = (~buttons_state >> 8 & B01111111); // exclude glide LED bit
-	for(int ii = 0; ii<7; ii++){
+	for(uint8_t ii = 0; ii<7; ii++){
 		bool value = (buttons_mask & 0x01 << (ii)); // >> (ii+8);
 
 		if (value != function_button_matrix[ii]){

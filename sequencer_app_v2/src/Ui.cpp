@@ -11,6 +11,7 @@
 #include "Variables.h"
 #include "Pinout.h"
 #include "Ui.h"
+#include "digitalWriteFast.h"
 #include <Arduino.h>
 #include <avr/pgmspace.h>
 
@@ -74,10 +75,10 @@ void Ui::init(Calibration& calibration, Dac& dac, Sequencer& sequencer){
 	pinMode(CS1_PIN, OUTPUT);
 	pinMode(CS2_PIN, OUTPUT);
 	pinMode(CS3_PIN, OUTPUT);
-	digitalWrite(CS0_PIN, HIGH);
-	digitalWrite(CS1_PIN, HIGH);
-	digitalWrite(CS2_PIN, HIGH);
-	digitalWrite(CS3_PIN, HIGH);
+	digitalWriteFast(CS0_PIN, HIGH);
+	digitalWriteFast(CS1_PIN, HIGH);
+	digitalWriteFast(CS2_PIN, HIGH);
+	digitalWriteFast(CS3_PIN, HIGH);
 
 	calibrationVar2 = &calibration;
     dacVar2         = &dac;
@@ -148,7 +149,7 @@ void Ui::onSaveButton(bool state) {
 		if (ui_mode == CALIBRATE_MODE) {
 			ui_mode = SEQUENCE_MODE;
 			calibrationVar2->writeCalibrationValues();
-			digitalWrite(GATE_PIN, LOW);
+			digitalWriteFast(GATE_PIN, LOW);
 			initializeSequenceMode();
 		} else if (ui_mode == SAVE_MODE) {
 
@@ -460,7 +461,7 @@ void Ui::initializeCalibrationMode() {
 	updateCalibration(calibration_step);
 	display.setDisplayAlpha("CAL");
 	ledMatrix.setMatrix(calibration_matrix);
-	digitalWrite(GATE_PIN, HIGH); //to make signals audible
+	digitalWriteFast(GATE_PIN, HIGH); //to make signals audible
 }
 
 void Ui::clearSequence(){
@@ -538,7 +539,7 @@ bool Ui::cancelSaveOrLoad(){
 
 	if (ui_mode == LOAD_MODE || ui_mode == SAVE_MODE || ui_mode == EDIT_PARAM_MODE || ui_mode == CALIBRATE_MODE) {
 		if (ui_mode == CALIBRATE_MODE) {
-			digitalWrite(GATE_PIN, LOW);
+			digitalWriteFast(GATE_PIN, LOW);
 		}
 		initializeSequenceMode();
 		display.blinkDisplay(true, 100, 1);

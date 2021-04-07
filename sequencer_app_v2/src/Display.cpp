@@ -1,17 +1,19 @@
 #include "Variables.h"
 #include "Pinout.h"
 #include "Font.h"
+#include "digitalWriteFast.h"
 #include "Display.h"
 #include <string.h>
+#include <stdint.h>
 
 namespace supersixteen{
 
 const bool COMMON_ANODE = true; //BA56-12GWA change to FALSE for common cathode display BC56-12GWA
 
-int digit_counter = 0;
+uint8_t digit_counter = 0;
 int num_display = 999;
 int digit_display[3] = { 0, 0, 0 };
-int digit_pins[3] = { DIGIT_1_PIN, DIGIT_2_PIN, DIGIT_3_PIN };
+uint8_t digit_pins[3] = { DIGIT_1_PIN, DIGIT_2_PIN, DIGIT_3_PIN };
 uint8_t alpha_display[3] = { 0, 0, 0 };
 
 bool decimal = 0;
@@ -42,9 +44,9 @@ void Display::init(){
 	pinMode(DIGIT_1_PIN, OUTPUT);
 	pinMode(DIGIT_2_PIN, OUTPUT);
 	pinMode(DIGIT_3_PIN, OUTPUT);
-	digitalWrite(DIGIT_1_PIN, LOW);
-	digitalWrite(DIGIT_2_PIN, LOW);
-	digitalWrite(DIGIT_3_PIN, LOW);
+	digitalWriteFast(DIGIT_1_PIN, LOW);
+	digitalWriteFast(DIGIT_2_PIN, LOW);
+	digitalWriteFast(DIGIT_3_PIN, LOW);
 	setDisplayNum(0);
 }
 
@@ -77,7 +79,7 @@ void Display::setDisplayAlphaVar(char displayAlpha[]){
 
 void Display::setDisplayAlpha(const char displayAlpha[]){ //turns 3-character array "MAJ" into ascii indexes that correspond to abbreviated font
 	num_display = 999; //prime variable for easy reset when changed again
-	for (int i = 0; i < 3; i++) {
+	for (uint8_t i = 0; i < 3; i++) {
 		if (displayAlpha[i] == 98) {
 			digit_display[i] = 11; //~alphabet[11]; //lowercase "b" as flat symbol
 		} else if (displayAlpha[i] == 32) {
@@ -148,15 +150,15 @@ void Display::blinkDisplay(bool is_blinking, int interval, int cycles){
 
 
 void Display::startupSequence(){
-		for (byte i = 0; i < 14; i++) {
-			digitalWrite(CS1_PIN, LOW);
+		for (uint8_t i = 0; i < 14; i++) {
+			digitalWriteFast(CS1_PIN, LOW);
 			digitalWrite(digit_pins[0], (startup_digits[i] & 0x01) == 0 ? HIGH : LOW);
 			digitalWrite(digit_pins[2], (startup_digits[i] & 0x02) == 0 ? HIGH : LOW);
 			digitalWrite(digit_pins[1], (startup_digits[i] & 0x04) == 0 ? HIGH : LOW);
 			SPI.setBitOrder(LSBFIRST); //shift registers like LSB
 			SPI.transfer(~startup_sequence[i]);
 			SPI.transfer(0x00); //led matrix
-			digitalWrite(CS1_PIN, HIGH);
+			digitalWriteFast(CS1_PIN, HIGH);
 			delay(70);
 		}
 		delay(100);

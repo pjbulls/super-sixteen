@@ -31,10 +31,10 @@ namespace supersixteen{
 #define GAIN_1  0x1
 #define GAIN_2  0x0
 
-#define ANALOG_PIN_1 A0
-#define ANALOG_PIN_2 A1
-#define ANALOG_PIN_3 A2
-#define ANALOG_PIN_4 A3
+#define ANALOG_PIN_1 PC0
+#define ANALOG_PIN_2 PC1
+#define ANALOG_PIN_3 PC2
+#define ANALOG_PIN_4 PC3
 
 #define ENC_A_PIN A4
 #define ENC_B_PIN A5

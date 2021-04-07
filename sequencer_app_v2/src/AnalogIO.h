@@ -28,7 +28,7 @@ class AnalogIo{
 
     private:
 
-        void readInput(int i);
+        void readInput(uint8_t i);
 
         void setPitch(int analogValue);
 

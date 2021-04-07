@@ -1,3 +1,0 @@
-(sym_lib_table
-  (lib (name kicad-cpu-board-smt-rescue)(type Legacy)(uri ${KIPRJMOD}/kicad-cpu-board-smt-rescue.lib)(options "")(descr ""))
-)

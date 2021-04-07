@@ -2,7 +2,7 @@
 
 #include "Pinout.h"
 #include "Dac.h"
-
+#include "digitalWriteFast.h"
 
 namespace supersixteen {
 void Dac::setOutput(uint8_t channel, uint8_t gain, uint8_t shutdown, unsigned int val)
@@ -17,10 +17,10 @@ void Dac::setOutput(uint8_t channel, uint8_t gain, uint8_t shutdown, unsigned in
 
 	//PORTB &= 0xfb;
 	SPI.setBitOrder(MSBFIRST);
-	digitalWrite(CS3_PIN, LOW);
+	digitalWriteFast(CS3_PIN, LOW);
 	SPI.transfer(highByte);
 	SPI.transfer(lowByte);
-	digitalWrite(CS3_PIN, HIGH);
+	digitalWriteFast(CS3_PIN, HIGH);
 }
 
 

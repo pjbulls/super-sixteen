@@ -1,4 +1,5 @@
 #pragma once
+#include <stdint.h>
 
 namespace supersixteen{
 
@@ -10,13 +11,13 @@ class Calibration {
 
         int getCalibratedOutput(double pitch);
 
-        int incrementCalibration(int amt, int step);
+        int incrementCalibration(int amt, uint8_t step);
 
         void readCalibrationValues();
 
         void writeCalibrationValues();
 
-        int getCalibrationValue(int step);
+        int getCalibrationValue(uint8_t step);
 
         int readDisplayModeValue();
 

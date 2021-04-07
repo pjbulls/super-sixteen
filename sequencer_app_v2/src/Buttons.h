@@ -35,7 +35,7 @@ class Buttons {
 
     void onButtonPush(uint16_t &event);
         
-    int button_map[16] = { 12, 13, 14, 15, 11, 10, 9, 8, 4, 5, 6, 7, 3, 2, 1, 0 }; //rows are wired symmetrically rather than sequentially
+    int button_map[16] = { 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 }; //rows are wired sequentially
     bool button_matrix[16] = { 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
     int saveCount = 0;
 

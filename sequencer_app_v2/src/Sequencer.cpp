@@ -5,6 +5,7 @@
 #include "Calibrate.h"
 #include "Sequencer.h"
 #include "Scales.h"
+#include "digitalWriteFast.h"
 namespace supersixteen{
 
 const byte SEQUENCE_MAX_LENGTH = 64;
@@ -198,7 +199,7 @@ void Sequencer::incrementStep() {
 
 	if (!clock_out_active) {
 		clock_out_active = true;
-		digitalWrite(CLOCK_OUT_PIN, HIGH);
+		digitalWriteFast(CLOCK_OUT_PIN, HIGH);
 	} 
 
 	if (seq_recording_effect) { //while recording, respect mutate button state and record active/inactive to current step
@@ -295,7 +296,7 @@ void Sequencer::setActiveNote(){
 			calculated_step_length = (active_sequence.duration_matrix[active_step] / 100.0) * (double)calculated_tempo;
 		}
 	} else if(seq_effect_mode && active_sequence.effect == EFFECT_STUTTER) {
-		digitalWrite(GATE_PIN, HIGH);
+		digitalWriteFast(GATE_PIN, HIGH);
 		gate_active = true;
 	}
 }
@@ -378,7 +379,7 @@ void Sequencer::updateGlide() {
 		current_note_value = calibrationVar->getCalibratedOutput(instantaneous_pitch);
 		dacVar->setOutput(0, GAIN_2, 1, current_note_value);
 		if (note_reached) {
-			digitalWrite(GATE_PIN, LOW);
+			digitalWriteFast(GATE_PIN, LOW);
 			gate_active = false;
 		}
 	} else if ((active_sequence.step_matrix[active_step] && active_sequence.glide_matrix[active_step]) || (seq_effect_mode && active_sequence.effect == EFFECT_GLIDE)) {
@@ -408,7 +409,7 @@ int Sequencer::getGlideKeeper(int step){
 
 void Sequencer::updateGate() {
 	if (clock_out_active && timekeeper > CLOCK_PULSE_DURATION) {
-		digitalWrite(CLOCK_OUT_PIN, LOW);
+		digitalWriteFast(CLOCK_OUT_PIN, LOW);
 		clock_out_active = false;
 	}
 	
@@ -418,10 +419,10 @@ void Sequencer::updateGate() {
 		if (active_sequence.effect == EFFECT_ROLL) {
 			for (byte i = 1; i <= active_sequence.effect_depth; i++) {
 				if (gate_active && timekeeper > (calculated_roll * i) - ROLL_PAUSE_DURATION && timekeeper < (calculated_roll * i)) {
-					digitalWrite(GATE_PIN, LOW);
+					digitalWriteFast(GATE_PIN, LOW);
 					gate_active = false;
 				} else if (!gate_active && timekeeper >= calculated_roll * i) {
-					digitalWrite(GATE_PIN, HIGH);
+					digitalWriteFast(GATE_PIN, HIGH);
 					gate_active = true;
 				}
 			}
@@ -439,12 +440,12 @@ void Sequencer::updateGate() {
 	if (seq_effect_mode && active_sequence.effect == EFFECT_STUTTER && !active_sequence.step_matrix[current_step]) {
 		//if (active_sequence.effect_depth < percent_step * steps_advanced) {
 		if (timekeeper > calculated_stutter) {
-			digitalWrite(GATE_PIN, LOW);
+			digitalWriteFast(GATE_PIN, LOW);
 			gate_active = false;
 		}
 	//} else if (active_sequence.duration_matrix[active_step] < percent_step * steps_advanced) {
 	} else if (timekeeper + calculated_tempo * (steps_advanced-1) > calculated_step_length) {
-		digitalWrite(GATE_PIN, LOW);
+		digitalWriteFast(GATE_PIN, LOW);
 		gate_active = false;
 	}
 
@@ -454,7 +455,7 @@ void Sequencer::updateGate() {
 void Sequencer::onPlayButton(){
 	play_active = !play_active;
 	if (!play_active) { 	
-		digitalWrite(GATE_PIN, LOW);
+		digitalWriteFast(GATE_PIN, LOW);
 		gate_active = false;
 	}
 	timekeeper = 0;
@@ -855,7 +856,7 @@ void Sequencer::setStepRecordingMode(bool state){
 		stepkeeper = timekeeper;
 		setActiveNote(); //update pitch
 		gate_active = false;
-		digitalWrite(GATE_PIN, HIGH);
+		digitalWriteFast(GATE_PIN, HIGH);
 
 	} else {
 		//make each note as long as the button was held down for
@@ -867,7 +868,7 @@ void Sequencer::setStepRecordingMode(bool state){
 		uint16_t recorded_step_duration = timekeeper - stepkeeper + (steps_elapsed * calculated_step_length);
 
 		active_sequence.duration_matrix[step_recording_initiated_step] = min(400, recorded_step_duration * 100 / calculated_step_length);
-		digitalWrite(GATE_PIN, LOW);
+		digitalWriteFast(GATE_PIN, LOW);
 	}
 	step_recording_mode = state;
 }

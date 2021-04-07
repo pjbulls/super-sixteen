@@ -30,20 +30,20 @@ const int analog_pins[4] = {
 #define DEFAULT_CHANGE_THRESHOLD 10
 #define LOW_CHANGE_THRESHOLD 4
 
-const int analog_params[4] = { PITCH_PARAM, OCTAVE_PARAM, DURATION_PARAM, CV_PARAM };
+const uint8_t analog_params[4] = { PITCH_PARAM, OCTAVE_PARAM, DURATION_PARAM, CV_PARAM };
 bool editing = false;
 
 int lastAnalogValues[4];
 int analogValues[4];
-int analogMultiplexor = 0;
+uint8_t analogMultiplexor = 0;
 
-int display_param = PITCH_PARAM;
+uint8_t display_param = PITCH_PARAM;
 int display_num = 0;
-int display_mode = 0; //0 = note numbers, 127 = note names (C1, B3, etc)
+uint8_t display_mode = 0; //0 = note numbers, 127 = note names (C1, B3, etc)
 char display_alpha[4];
 bool param_changed = false;
 
-int change_threshold = DEFAULT_CHANGE_THRESHOLD;
+int8_t change_threshold = DEFAULT_CHANGE_THRESHOLD;
 bool recording = false;
 bool recorded_input_active = false;
 
@@ -55,6 +55,10 @@ void AnalogIo::init(Sequencer& sequencer){
 	pinMode(ANALOG_PIN_2, INPUT);
 	pinMode(ANALOG_PIN_3, INPUT);
 	pinMode(ANALOG_PIN_4, INPUT);
+
+	// Bump up ADC prescaler, we can safely read 10 bits at >200 kHz.
+    ADCSRA |= (1 << ADPS2) | (1 << ADPS1);
+
 	sequencerVar = &sequencer;
 	//initialize analog knob positions to avoid weird edits
 	poll();
@@ -78,7 +82,7 @@ void AnalogIo::poll() {
 	readInput(analogMultiplexor);
 }
 
-void AnalogIo::readInput(int i){
+void AnalogIo::readInput(uint8_t i){
 	// if (i > 3 || i < 0) return; //sometimes we get desynced by interrupts, and analogRead on a wrong pin is fatal
 	analogValues[i] = analogRead(analog_pins[i]);
 	param_changed = false;

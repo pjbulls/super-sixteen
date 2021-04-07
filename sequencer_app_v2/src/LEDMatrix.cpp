@@ -6,13 +6,14 @@
 #include "LEDMatrix.h"
 #include "Buttons.h"
 #include "Font.h"
+#include "digitalWriteFast.h"
 
 namespace supersixteen{
 
 elapsedMillis multiplex;
 elapsedMillis blinker;
 bool led_matrix[17];
-int step_map[17] = { 3, 2, 1, 0, 0, 1, 2 ,3, 3, 2, 1, 0, 0, 1, 2, 3, 0 }; //rows are wired symmetrically rather than sequentially
+uint8_t step_map[17] = { 3, 2, 1, 0, 3, 2, 1 ,0, 3, 2, 1, 0, 3, 2, 1, 0, 0 }; //rows are wired sequentially
 int selected_step_led = 0;
 const int MILLISECONDS_PER_MULTIPLEX = 1;
 const int MILLISECONDS_AFTER_MULTIPLEX = 0;
@@ -22,9 +23,8 @@ byte visible_bar = 0;
 uint8_t byte1;
 uint8_t byte2;
 
-int row_counter = 0;
-int col = 0;
-int j;
+uint8_t row_counter = 0;
+uint8_t col = 0;
 
 byte dataToSend;
 
@@ -61,12 +61,12 @@ void LedMatrix::blankMatrix(int row) {
 	byte2 = 0xF0;
 	byte1 += ~byte2;
 	//PORTB = PORTB & B10111111; //equivalent to 
-	digitalWrite(CS1_PIN, LOW);
+	digitalWriteFast(CS1_PIN, LOW);
 	SPI.setBitOrder(LSBFIRST); //shift registers like LSB
 	displayVar3->blankSevenSegmentDisplay(); //has to happen HERE bc it's part of the shift register 2-byte sequence
 	SPI.transfer(~byte1); //led matrix
 	//PORTB = PORTB | B01000000; //equivalent to 
-	digitalWrite(CS1_PIN, HIGH);
+	digitalWriteFast(CS1_PIN, HIGH);
 	//displayVar3->nextDigit();
 }
 
@@ -125,7 +125,7 @@ void LedMatrix::blinkCurrentStep(){
 }
 
 void LedMatrix::reset(){
-	for (int i = 0; i < 16; i++) {
+	for (uint8_t i = 0; i < 16; i++) {
 		led_matrix[i] = 0;
 	}
 }
@@ -150,7 +150,7 @@ void LedMatrix::setMatrix(bool *matrix) {
 }
 
 void LedMatrix::toggleLed(int led){
-	led_matrix[led] = ~led_matrix[led];
+	led_matrix[led] = !led_matrix[led];
 }
 
 
